@@ -1,0 +1,49 @@
+version: '3.8'
+
+services: 
+  # psqldb:
+  #   image: postgres
+  #   env_file: ./.env
+  #   ports:
+  #     - $DATABASE_PORT:$DATABASE_PORT
+  #   environment:
+  #     - POSTGRES_DB=$DATABASE
+  #     - POSTGRES_USER=$DATABASE_USER
+  #     - POSTGRES_PASSWORD=$DATABASE_PASSWORD
+  #   volumes:
+  #     - pg_data:/var/lib/postgresql/data
+
+  mysqldb:
+    image: mysql
+    restart: always
+    env_file: ./.env
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
+    ports:
+      - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
+    volumes: 
+      - db-config:/etc/mysql
+      - db-data:/var/lib/mysql
+      - ./db/backup/files/:/data_backup/data
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: praieiro-app
+    env_file: ./.env
+    ports:
+      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+    volumes: 
+      - ./src:/src
+      - /node_modules
+    depends_on:
+      - mysqldb
+      #- psqldb
+    stdin_open: true
+    tty: true
+
+volumes:
+  db-config:
+  db-data:
+  #pg_data:

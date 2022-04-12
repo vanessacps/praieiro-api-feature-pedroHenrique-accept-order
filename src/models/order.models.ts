@@ -41,6 +41,12 @@ export class Order extends Model<Order> {
     })
     avaliacao: number;
 
+    @Column({
+        type: DataType.STRING,
+        allowNull: false
+    })
+    comentario: string;
+
 }   
 
 
